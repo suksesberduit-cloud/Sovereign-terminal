@@ -20,11 +20,11 @@ jobs:
           set -e
           ZIP_FILE=$(ls sovereign-terminal*.zip 2>/dev/null | sort -V | tail -n 1)
           if [ -n "$ZIP_FILE" ]; then
-            echo "Ditemukan: $ZIP_FILE — mengekstrak..."
+            echo "Ditemukan: $ZIP_FILE â€” mengekstrak..."
             mkdir -p extracted
             unzip -o "$ZIP_FILE" -d extracted
           elif [ -f "index.html" ]; then
-            echo "Tidak ada file sovereign-terminal*.zip, tapi index.html sudah ada langsung di root repo — dipakai langsung."
+            echo "Tidak ada file sovereign-terminal*.zip, tapi index.html sudah ada langsung di root repo â€” dipakai langsung."
             mkdir -p extracted
             cp index.html manifest.json sw.js icon-192.png icon-512.png extracted/ 2>/dev/null || true
           else
@@ -37,10 +37,10 @@ jobs:
       - name: Validasi isi hasil extract
         run: |
           if [ ! -f "extracted/index.html" ]; then
-            echo "::error::extracted/index.html tidak ditemukan setelah extract. Cek isi zip — index.html harus ada di root zip (bukan di dalam subfolder)."
+            echo "::error::extracted/index.html tidak ditemukan setelah extract. Cek isi zip â€” index.html harus ada di root zip (bukan di dalam subfolder)."
             exit 1
           fi
-          echo "OK — index.html ditemukan."
+          echo "OK â€” index.html ditemukan."
           ls -la extracted
 
       - name: Setup Node
@@ -71,6 +71,22 @@ jobs:
 
       - name: Tambah platform Android
         run: npx cap add android
+
+      - name: Generate icon launcher Android dari assets/icon.png (fix icon default Capacitor)
+        run: |
+          mkdir -p assets
+          if [ -f "extracted/assets/icon.png" ]; then
+            cp extracted/assets/icon.png assets/icon.png
+          elif [ -f "extracted/icon-512.png" ]; then
+            echo "assets/icon.png tidak ada di zip, fallback ke icon-512.png (di-upscale)."
+            convert extracted/icon-512.png -resize 1024x1024 assets/icon.png
+          else
+            echo "::warning::Tidak ada source icon ditemukan â€” icon Android akan tetap default Capacitor."
+          fi
+          if [ -f "assets/icon.png" ]; then
+            npm install @capacitor/assets --save-dev
+            npx capacitor-assets generate --android
+          fi
 
       - name: Pastikan Gradle & AGP kompatibel dengan JDK 21
         working-directory: android
