@@ -12,26 +12,26 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Cari & extract sovereign-terminal-v1.zip (kalau di-upload sebagai file zip utuh)
+      - name: Cari & extract sovereign-terminal-v1.1.zip (kalau di-upload sebagai file zip utuh)
         run: |
           set -e
-          if [ -f "sovereign-terminal-v1.zip" ]; then
-            echo "Ditemukan sovereign-terminal-v1.zip di root repo — mengekstrak..."
+          if [ -f "sovereign-terminal-v1.1.zip" ]; then
+            echo "Ditemukan sovereign-terminal-v1.1.zip di root repo — mengekstrak..."
             mkdir -p extracted
-            unzip -o sovereign-terminal-v1.zip -d extracted
+            unzip -o sovereign-terminal-v1.1.zip -d extracted
           elif [ -f "index.html" ]; then
-            echo "Tidak ada sovereign-terminal-v1.zip, tapi index.html sudah ada langsung di root repo — dipakai langsung."
+            echo "Tidak ada sovereign-terminal-v1.1.zip, tapi index.html sudah ada langsung di root repo — dipakai langsung."
             mkdir -p extracted
             cp index.html manifest.json sw.js icon-192.png icon-512.png extracted/ 2>/dev/null || true
           else
-            echo "::error::Tidak ditemukan sovereign-terminal-v1.zip maupun index.html di root repo. Pastikan salah satunya ada."
+            echo "::error::Tidak ditemukan sovereign-terminal-v1.1.zip maupun index.html di root repo. Pastikan salah satunya ada."
             exit 1
           fi
 
       - name: Validasi isi hasil extract
         run: |
           if [ ! -f "extracted/index.html" ]; then
-            echo "::error::extracted/index.html tidak ditemukan setelah extract. Cek isi sovereign-terminal-v1.zip — index.html harus ada di root zip (bukan di dalam subfolder)."
+            echo "::error::extracted/index.html tidak ditemukan setelah extract. Cek isi sovereign-terminal-v1.1.zip — index.html harus ada di root zip (bukan di dalam subfolder)."
             exit 1
           fi
           echo "OK — index.html ditemukan."
